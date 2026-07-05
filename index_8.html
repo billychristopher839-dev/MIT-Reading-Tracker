@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course R: The MIT Reading Game</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACh0lEQVR42u2ZP4sTQRjGf+/sn6yXOyJyqLVgaWEtFiJa2AqiH0C0FTvxGwhXChYWBzZXaaWgzSlcbaeFFoqIREVz3CVuNrvzWmySW8JpMJxHknt/MOzO7uyy8+zM884fMAzDMAzDMAzDMAzjoCHVzG2Wew7CQd5DXkPCz2Rrq2xeFUCBKzRWThLf6qKZQAx4AZfhWw9pLW/hC4CzLFw4R/35NpoGkFA+n9WQeI3N4+/JmgAniI9eo9GsvI8C0jqSvKRz6RXtZwCLuOA6h79GuCMKHnCTVPoe34f1dge9BZgAB12AcEq+Qz3kWibX94rcQ15aUaVg5bruwQ+cCgEEghgJFULZMeDFGMFBrVo2wi1HiNN5agEZmjbJX2RoIWhQ/mnpHUKiNv5LJSrpN/InESwpqI5EsZkUwAGf6LUe8OPiuLIdvF+ldXkePWBvjGSWBdD/WMmpFkCBY4QLZ1i4kaHeDaOA5jEufEP38Vu6HwASRM6zeDOERMtHxYOPEdckf71BZ13+UaSpEGAJ1zhNspKiVKIAdYSf+I8DASLEnaJ2P0KGldRSGN6RPdqgsz6TXcBD3kbTDJ+BxOU1TcElPXS7KtYvfLOHa+yMAzQrcHEXbc6yCUoAiUPcYDIEQgCJQDASNaKg7AIecIq4AGLQyIbCJoAJYAKYACaACbBvAvh+LB4eZWTxYhaYaCAkIAJOygUM10/IDM4uJ/pghazoJ99/hwNXQDrXAgwmIE/ZuhMhd3WX+2184ZidvjBRC9guNz6KeXDWST1g3xYsptUDLAyaAHNCONK0c79L3v/F8MZ0leGOT383B8rzUeH/uDOk43eGcl8ujBQYhmEYhmEYhmEYhmEY4/kNLXD5MvHkzWIAAAAASUVORK5CYII=">
+<style>
+:root{
+  --mit-red:#750014;
+  --mit-bright:#ff1423;
+  --cardinal:#a31f34;
+  --ink:#1c1c20;
+  --slate:#8b959e;
+  --slate-dark:#5b646d;
+  --paper:#f5f4f0;
+  --card:#ffffff;
+  --line:#e3e1da;
+  --gold:#c8a24a;
+  --ok:#1f7a3d;
+  --radius:14px;
+  --shadow:0 2px 10px rgba(28,28,32,.07);
+  --font-ui:"Helvetica Neue",Helvetica,Arial,"Segoe UI",system-ui,sans-serif;
+  --font-serif:Georgia,"Times New Roman",serif;
+  --font-mono:"SF Mono",Menlo,Consolas,"Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-ui);
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.5;
+}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:1rem}
+img{user-select:none;-webkit-user-drag:none}
+
+/* ---------- header ---------- */
+header{
+  background:var(--mit-red);
+  color:#fff;
+  padding:14px 20px;
+  display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+header img.logo{height:26px;width:auto;filter:brightness(0) invert(1);opacity:.96}
+.head-titles{flex:1;min-width:0}
+.head-titles h1{
+  font-size:1.05rem;font-weight:700;letter-spacing:.04em;line-height:1.2;
+}
+.head-titles .sub{
+  font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75;
+  font-family:var(--font-serif);
+}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.head-btn{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.35);
+  color:#fff;border-radius:8px;
+  padding:7px 12px;font-size:.82rem;font-weight:600;
+  transition:background .15s;
+}
+.head-btn:hover{background:rgba(255,255,255,.25)}
+
+main{max-width:1060px;margin:0 auto;padding:22px 18px 80px}
+
+/* ---------- book banner ---------- */
+.book-banner{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin:6px 2px 16px;
+}
+.book-banner .course-tag{
+  font-family:var(--font-mono);font-size:.75rem;
+  background:var(--ink);color:#fff;border-radius:6px;padding:3px 8px;
+  letter-spacing:.06em;
+}
+.book-banner h2{font-family:var(--font-serif);font-size:1.5rem;font-weight:700}
+.book-banner .author{color:var(--slate-dark);font-size:.95rem}
+.book-banner .edit-link{
+  margin-left:auto;background:none;border:none;color:var(--cardinal);
+  font-size:.85rem;font-weight:600;text-decoration:underline;
+}
+
+/* ---------- corridor ---------- */
+.corridor-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px;
+}
+.corridor-wrap{position:relative;background:#141216}
+.corridor-wrap svg{display:block;width:100%;height:auto}
+.corridor-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;pointer-events:none;
+}
+.corridor-overlay .pct{
+  font-size:2.6rem;font-weight:800;color:#fff;
+  text-shadow:0 2px 14px rgba(0,0,0,.7);
+  font-variant-numeric:tabular-nums;
+}
+.corridor-overlay .lbl{
+  color:rgba(255,255,255,.85);font-size:.72rem;letter-spacing:.22em;
+  text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.8);
+}
+.corridor-foot{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap;
+}
+.corridor-foot .pages-read{font-variant-numeric:tabular-nums;font-size:.92rem}
+.corridor-foot .pages-read b{font-size:1.15rem}
+.log-controls{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.log-controls input[type=number]{
+  width:92px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+  font-variant-numeric:tabular-nums;
+}
+.btn{
+  border:none;border-radius:8px;padding:9px 14px;font-weight:700;font-size:.88rem;
+  transition:transform .1s, filter .15s;
+}
+.btn:active{transform:scale(.97)}
+.btn-red{background:var(--cardinal);color:#fff}
+.btn-red:hover{filter:brightness(1.12)}
+.btn-ghost{background:#efede8;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:#e6e3dc}
+.btn-quick{background:#efede8;border:1px solid var(--line);color:var(--ink);font-size:.82rem;padding:8px 11px;border-radius:8px;font-weight:700}
+.btn-quick:hover{background:#e6e3dc}
+
+/* ---------- stats ---------- */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;margin-bottom:22px;
+}
+.stat{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cardinal);
+}
+.stat .k{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-dark);margin-bottom:4px}
+.stat .v{font-size:1.55rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15}
+.stat .d{font-size:.76rem;color:var(--slate-dark);margin-top:3px}
+.stat.rank .v{color:var(--cardinal)}
+
+/* ---------- two column ---------- */
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:start}
+@media(max-width:820px){.two-col{grid-template-columns:1fr}}
+
+/* ---------- chapters ---------- */
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;
+}
+.panel h3{
+  font-family:var(--font-serif);font-size:1.12rem;margin-bottom:4px;
+}
+.panel .panel-sub{font-size:.8rem;color:var(--slate-dark);margin-bottom:14px}
+.chapter{
+  display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);
+}
+.chapter:first-of-type{border-top:none}
+.ch-marker{
+  flex:none;width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:.75rem;font-weight:700;color:var(--slate-dark);
+  background:#faf9f6;margin-top:2px;
+}
+.chapter.done .ch-marker{background:var(--cardinal);border-color:var(--cardinal);color:#fff}
+.ch-body{flex:1;min-width:0}
+.ch-name{font-weight:700;font-size:.95rem}
+.chapter.done .ch-name{color:var(--slate-dark);text-decoration:line-through;text-decoration-color:rgba(163,31,52,.5)}
+.ch-milestone{
+  margin-top:8px;border-left:3px solid var(--gold);
+  background:#fbf7ec;border-radius:0 8px 8px 0;
+  padding:9px 12px;font-size:.86rem;
+  animation:reveal .5s ease;
+}
+@keyframes reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ch-milestone .yr{
+  font-family:var(--font-mono);font-weight:700;color:var(--mit-red);
+  font-size:.78rem;letter-spacing:.05em;
+}
+.ch-milestone .mt{font-family:var(--font-serif);font-weight:700;display:block;margin:1px 0 2px}
+.ch-milestone .mx{color:#4c4636}
+.ch-locked{
+  margin-top:8px;font-size:.8rem;color:var(--slate);
+  font-style:italic;
+}
+.ch-action{flex:none;align-self:center}
+.btn-complete{
+  background:#fff;border:2px solid var(--cardinal);color:var(--cardinal);
+  border-radius:8px;padding:6px 11px;font-size:.78rem;font-weight:700;
+}
+.btn-complete:hover{background:var(--cardinal);color:#fff}
+.btn-undone{
+  background:none;border:none;color:var(--slate);font-size:.74rem;text-decoration:underline;
+}
+
+/* ---------- tim + sprint ---------- */
+.side-stack{display:flex;flex-direction:column;gap:18px}
+.tim-box{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;text-align:center;position:relative;
+}
+.tim-box img{width:118px;transition:transform .3s}
+.tim-box img.bounce{animation:timBounce .6s ease}
+@keyframes timBounce{
+  0%,100%{transform:none}
+  30%{transform:translateY(-14px) rotate(-4deg)}
+  60%{transform:translateY(0) rotate(3deg)}
+}
+.tim-bubble{
+  background:#faf9f6;border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;font-size:.88rem;margin-bottom:12px;position:relative;
+  font-family:var(--font-serif);font-style:italic;color:#3a3a40;
+}
+.tim-bubble::after{
+  content:"";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:var(--line);border-bottom:none;
+}
+.tim-name{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--slate-dark);margin-top:6px}
+
+.sprint .timer-display{
+  font-family:var(--font-mono);font-size:2.4rem;font-weight:700;text-align:center;
+  font-variant-numeric:tabular-nums;margin:8px 0;letter-spacing:.03em;
+}
+.sprint.running .timer-display{color:var(--cardinal)}
+.sprint-durations{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.sprint-durations button{
+  background:#efede8;border:1px solid var(--line);border-radius:8px;
+  padding:6px 12px;font-size:.82rem;font-weight:700;
+}
+.sprint-durations button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.sprint-actions{display:flex;gap:8px;justify-content:center}
+.sprint-count{text-align:center;font-size:.78rem;color:var(--slate-dark);margin-top:10px}
+
+/* ---------- review ---------- */
+.stars{display:flex;gap:4px;margin:8px 0 10px}
+.stars button{
+  background:none;border:none;font-size:1.7rem;color:#d8d5cc;line-height:1;
+  transition:transform .1s;
+}
+.stars button.on{color:var(--gold)}
+.stars button:hover{transform:scale(1.15)}
+.review-notes{
+  width:100%;min-height:88px;border:1px solid var(--line);border-radius:8px;
+  padding:10px;resize:vertical;background:#fdfcfa;
+}
+.review-saved{font-size:.76rem;color:var(--ok);margin-top:6px;min-height:1em}
+
+/* ---------- modals ---------- */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(20,18,22,.62);z-index:100;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--card);border-radius:16px;max-width:640px;width:100%;
+  max-height:90vh;overflow:auto;padding:26px;
+  animation:popIn .25s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.modal h2{font-family:var(--font-serif);font-size:1.4rem;margin-bottom:4px}
+.modal .modal-sub{color:var(--slate-dark);font-size:.86rem;margin-bottom:18px}
+.modal .onboard-mast{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.modal .onboard-mast img.logo-mast{height:34px;width:auto}
+.modal .onboard-mast img.tim-hello{width:54px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-dark);margin-bottom:5px}
+.field input,.field textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fdfcfa;
+}
+.field input:focus,.field textarea:focus{outline:2px solid var(--cardinal);outline-offset:1px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.field-row{grid-template-columns:1fr}}
+.ch-editor{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:#faf9f6}
+.ch-editor .ch-ed-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ch-editor .ch-ed-head .num{font-family:var(--font-mono);font-size:.72rem;color:var(--slate-dark);flex:none}
+.ch-editor input{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:#fff}
+.ch-editor textarea{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:.85rem;resize:vertical;min-height:52px}
+.ch-editor .ms-label{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-dark);margin:6px 0 3px;display:block}
+.count-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.count-row input[type=number]{width:110px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fdfcfa;font-variant-numeric:tabular-nums}
+.count-row .btn{padding:9px 13px}
+.count-note{font-size:.8rem;color:var(--slate-dark);font-variant-numeric:tabular-nums}
+.ch-list{max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;padding:10px;background:#faf9f6}
+.ch-list .ch-editor{background:#fff}
+.ch-list .ch-editor:last-child{margin-bottom:0}
+.ms-toggle{flex:none;background:#efede8;border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:.72rem;font-weight:700;color:var(--slate-dark);letter-spacing:.03em}
+.ms-toggle:hover{background:#e6e3dc;color:var(--ink)}
+.ms-preview{font-size:.82rem;color:#4c4636;margin-top:2px;line-height:1.35}
+.ms-preview .yr{font-family:var(--font-mono);font-weight:700;color:var(--mit-red);font-size:.76rem;margin-right:4px}
+.ms-fields{margin-top:8px}
+.ch-remove{background:none;border:none;color:var(--slate);font-size:1.1rem;line-height:1;flex:none}
+.ch-remove:hover{color:var(--cardinal)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.hint{font-size:.76rem;color:var(--slate-dark);margin-top:6px}
+.err{color:var(--cardinal);font-size:.8rem;margin-top:8px;min-height:1em;font-weight:600}
+
+/* ---------- library ---------- */
+.lib-item{
+  display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);
+  border-radius:10px;margin-bottom:10px;background:#faf9f6;
+}
+.lib-item.active{border-color:var(--cardinal);background:#fdf4f5}
+.lib-item .lib-info{flex:1;min-width:0}
+.lib-item .lib-title{font-weight:700;font-family:var(--font-serif)}
+.lib-item .lib-meta{font-size:.78rem;color:var(--slate-dark)}
+.lib-item .lib-done{
+  font-size:.68rem;font-weight:700;letter-spacing:.08em;color:#fff;
+  background:var(--ok);border-radius:6px;padding:2px 7px;text-transform:uppercase;
+}
+.lib-actions{display:flex;gap:6px;flex:none}
+.lib-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 10px;font-size:.78rem;font-weight:700}
+.lib-btn:hover{background:#f0eee8}
+.lib-btn.danger{color:var(--cardinal);border-color:#e8c8ce}
+.lib-btn.danger:hover{background:#fbeef0}
+
+/* ---------- game over ---------- */
+.gameover{
+  position:fixed;inset:0;z-index:200;background:#0d0b10;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  overflow:auto;
+  animation:fadeIn .5s ease;
+}
+.gameover .go-inner{max-width:560px;text-align:center;color:#fff;position:relative;z-index:2}
+.gameover .go-sun{
+  width:130px;height:130px;border-radius:50%;margin:0 auto 22px;
+  background:radial-gradient(circle,#fff8e0 0%,#ffd76a 35%,#ff8c3a 70%,rgba(255,80,40,0) 100%);
+  animation:sunrise 2.4s ease both;
+  box-shadow:0 0 90px 30px rgba(255,170,60,.45);
+}
+@keyframes sunrise{from{transform:translateY(70px) scale(.4);opacity:0}to{transform:none;opacity:1}}
+.gameover h2{font-family:var(--font-serif);font-size:2rem;margin-bottom:8px}
+.gameover .go-rank{
+  font-size:4.4rem;font-weight:900;color:var(--mit-bright);line-height:1;
+  margin:10px 0;text-shadow:0 0 40px rgba(255,20,35,.55);
+}
+.gameover p{color:#cfc8bd;font-size:.95rem;margin-bottom:8px}
+.gameover .go-actions{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.gameover img.tim-go{width:120px;margin-top:16px;animation:timBounce 1.4s ease infinite}
+#confetti-canvas{position:fixed;inset:0;z-index:250;pointer-events:none}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--ink);color:#fff;border-radius:10px;padding:11px 18px;
+  font-size:.88rem;z-index:300;opacity:0;transition:all .3s cubic-bezier(.2,.9,.3,1.1);
+  max-width:90vw;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.35);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast .yr{color:var(--gold);font-family:var(--font-mono);font-weight:700}
+
+footer{
+  text-align:center;padding:26px 16px;color:var(--slate);font-size:.75rem;
+  font-family:var(--font-serif);font-style:italic;
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+@media(max-width:600px){
+  .corridor-overlay .pct{font-size:1.9rem}
+  header{padding:12px 14px}
+  .head-titles h1{font-size:.92rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img class="logo" src="data:image/webp;base64,UklGRoYFAABXRUJQVlA4WAoAAAAQAAAAAwEAiQAAQUxQSHcBAAABkKtt2yFJX2EUV8VjT26ba3v3CKxI0R7ERsapua0fb1b//zX+yroiYgKKirOuP1JICX0arCip7Nf1WwopYUCLSirGur5HISUM6YpuKEahNimghCE913XVPkUZnAKfjGrQsC/wzggajAL3Ta5CglFhy+QFBNqnyvzXjdcVUROMdbFp8kxURfusO8QtMO+ZvEZbdYaAln5++8H4/ecc+UkCOvvz24/2+d0ZOrxDeAGzZ+IHbdUhOnq3NR6zkcftbp3cIfriKGaM4h6TgTiK7UdxFLhZSBdyf3OM/3JrFCQJ6WHuT87+/9y/cfLd7BqYt01egXnK1a5qoRml3jJ5rhvavtJy0tkgwahg9AIC9jVU5r/Mf5n/ujooSyHt1+TbdDQM5vdpyKOBo5PjE/tHJ5PkpZ9mTzEBs5+SmjrzX/dBVRaFz63GqvDA5Bo0B7Bt8hKKAUCz/Spx5kofWmu+VCwx5kq3TS6W8iXGQmnd5HEpV7JfLBXGmwwAVlA4IOgDAABQIQCdASoEAYoAPikSh0MhoSESCN10GAKEpu3V6iPZ9j/GDaSO6fjX+t3H8eB+k1PH1c/i/5t+oHys/W72ZeYB/vv4B5wHqA8wH6Nf3L+we65/cP9p/h/cB5I3rCf7v2Nf5b/r/YP/hH9G9bj/Y/2v3S/2n/aP2U9XCWBJRQ99OjD2BZSomfQYkXZaBrgKzMiRelceuteBSugExiRSvKDAmrmvavvds5IDlm9zc4tqOOUygjmWvNDN+/z0lbGIe3QZLyEwCBjcnag8qXGRWNbWYJcgYuQJDYkDRmtnZvcHFuDiygwpi8K1I9OGCkmi2amb2fN7PYZm2Os3MsIHtHGhXYGOg6yZ7s0hjRx+s3YbUMP0AAD+/hKukakVkiFONyP07TH5J5B8lmpigNx7msccx8FAND4q1lseoyJlbjpT/FI+0myUv7C8cYUXovt3bxQ8WWkozhW4jOv/5Nm/2FYIRG0k7aVdGNwrtMOq5d4O2g8xSkOlF36PdpxmluYE1l47LfCTFdEehJRQD/pmeWvxuUqFth+i7KkKcxjg/dZWsBvoLDRq1hxmvoD71/fjOdSebCjl8/J8hXvXMfgRGQytadjLoP0E6nbAACffZXjeYSCwRKSJ3NvU1JRBs2PKzxqoGxvpyw/UPvAkoz7oLVcJNPDRQADsuT6n+NUf2naZBebMc8HPjLTJ3FHz3wE7YvyI9LYED9ytTAmlxKAqFm4pmOAEb/5oGjYyK9JQdODcA2mV9T+Kza2rsOFk6YcWUqYbmzgdSB4TDBUFH8vE2luI0ovJ9P9EIGBns2tahnyqoFpGQhxHG1TZXem+ozL/MTeS8XrU9bz22KYEfPSEMVZTduVIc1+/W5vG3sSruSQWFFY/s9XOFJld04rgB4YSQS/m3+CYmg9Busw/W8XdVzv/Jlrb9HpvcLumkW5WWGfI+W9y7vu/ZyRGfh1D2jWXsY5I6g+RnqQvxUYP+ZPoq+YWD3b1DiY8YpFYczJ2cBawkaBEqGWGNLWp3v7Y/T5b//4d16iQZwihAhhzVT5QSiQvxEv2o2k68JXTVQH/p96BC0urcibKhekbaqphAfhFOVpxswN0CjuHf0QKHwPaHlCmlL4ZuQsS63GO3bglpCE8iRaEWZb1UTep1DMBQBizgIoAFMx4sE9dGF5ewDWxfW7aAUGEMMzLspy6Q3ySPILGJjOEr5+B0e6PaHTFPOO5NzfgVrMIKqWayFGap9GnqE/lPDXImMTz03reWpb9Zvxlv52qLECJwBQtARk0gdd2rpm8Mywwmjnhu7tXwuhgE3ay4AHMlcBNNhg68BBor9AQkHsU0GnC3QAA" alt="MIT logo">
+  <div class="head-titles">
+    <h1>Course R: The Reading Game</h1>
+    <div class="sub">Mens et Manus et Libri</div>
+  </div>
+  <div class="head-actions">
+    <button class="head-btn" id="btn-library">Course catalog</button>
+    <button class="head-btn" id="btn-sound" aria-label="Toggle sound">Sound: on</button>
+  </div>
+</header>
+
+<main id="main-app" hidden>
+
+  <div class="book-banner">
+    <span class="course-tag" id="course-tag">R.001</span>
+    <h2 id="bk-title"></h2>
+    <span class="author" id="bk-author"></span>
+    <button class="edit-link" id="btn-edit-book">Edit course details</button>
+  </div>
+
+  <div class="corridor-card">
+    <div class="corridor-wrap">
+      <svg id="corridor-svg" viewBox="0 0 800 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff8e0"/>
+            <stop offset="45%" stop-color="#ffd76a"/>
+            <stop offset="80%" stop-color="#ff8c3a"/>
+            <stop offset="100%" stop-color="#ff8c3a" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3a3440"/>
+            <stop offset="100%" stop-color="#211d26"/>
+          </linearGradient>
+          <linearGradient id="wallGradL" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#26212c"/>
+            <stop offset="100%" stop-color="#48404f"/>
+          </linearGradient>
+          <linearGradient id="wallGradR" x1="1" y1="0" x2="0" y2="0">
+            <stop offset="0%" stop-color="#26212c"/>
+            <stop offset="100%" stop-color="#48404f"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="800" height="260" fill="#141216"/>
+        <polygon points="0,260 800,260 460,150 340,150" fill="url(#floorGrad)"/>
+        <polygon points="0,0 340,86 340,150 0,260" fill="url(#wallGradL)"/>
+        <polygon points="800,0 460,86 460,150 800,260" fill="url(#wallGradR)"/>
+        <polygon points="0,0 800,0 460,86 340,86" fill="#1b1721"/>
+        <g stroke="#f4e9c8" stroke-width="3" opacity=".55">
+          <line x1="120" y1="26" x2="200" y2="26"/><line x1="600" y1="26" x2="680" y2="26"/>
+          <line x1="230" y1="52" x2="286" y2="52"/><line x1="514" y1="52" x2="570" y2="52"/>
+          <line x1="300" y1="72" x2="338" y2="72"/><line x1="462" y1="72" x2="500" y2="72"/>
+        </g>
+        <rect x="340" y="86" width="120" height="64" fill="#0c0a10"/>
+        <circle id="henge-sun" cx="400" cy="118" r="8" fill="url(#sunGrad)" opacity="0.12"/>
+        <polygon points="300,260 500,260 452,158 348,158" fill="#0f0d13" opacity=".55"/>
+        <polygon id="floor-fill" points="300,260 500,260 500,260 300,260" fill="#a31f34"/>
+        <circle id="walker" cx="400" cy="252" r="7" fill="#fff" stroke="#a31f34" stroke-width="3"/>
+        <text x="14" y="248" fill="rgba(255,255,255,.4)" font-size="11" font-family="Georgia,serif" font-style="italic">The Infinite Corridor</text>
+      </svg>
+      <div class="corridor-overlay">
+        <div class="pct" id="pct-label">0%</div>
+        <div class="lbl">walk toward mithenge</div>
+      </div>
+    </div>
+    <div class="corridor-foot">
+      <div class="pages-read">Page <b id="cur-page">0</b> of <span id="tot-pages">0</span></div>
+      <div class="log-controls">
+        <button class="btn-quick" data-add="5">+5</button>
+        <button class="btn-quick" data-add="10">+10</button>
+        <button class="btn-quick" data-add="25">+25</button>
+        <input type="number" id="page-input" min="0" placeholder="Page no.">
+        <button class="btn btn-red" id="btn-set-page">Set page</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h3>Problem sets and milestones</h3>
+      <div class="panel-sub">One chapter is one pset. Finish it and MIT unlocks a real moment from its history, in order, from 1861 onward.</div>
+      <div id="chapter-list"></div>
+    </div>
+
+    <div class="side-stack">
+      <div class="tim-box">
+        <div class="tim-bubble" id="tim-line">Let's get to work. The Dome doesn't build itself.</div>
+        <img id="tim-img" src="data:image/webp;base64,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" alt="Tim the Beaver">
+        <div class="tim-name">Tim the Beaver, Study Coach</div>
+      </div>
+
+      <div class="panel sprint" id="sprint-panel">
+        <h3>Study sprint</h3>
+        <div class="panel-sub">Pick a length, hit start, read until Tim rings the bell.</div>
+        <div class="sprint-durations" id="sprint-durations">
+          <button data-min="15">15 min</button>
+          <button data-min="25" class="sel">25 min</button>
+          <button data-min="45">45 min</button>
+        </div>
+        <div class="timer-display" id="timer-display">25:00</div>
+        <div class="sprint-actions">
+          <button class="btn btn-red" id="btn-sprint">Start sprint</button>
+          <button class="btn btn-ghost" id="btn-sprint-reset">Reset</button>
+        </div>
+        <div class="sprint-count" id="sprint-count"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Your review</h3>
+        <div class="panel-sub">Rate and jot notes as you go. Saved per book.</div>
+        <div class="stars" id="stars"></div>
+        <textarea class="review-notes" id="review-notes" placeholder="What's working? What's dragging? Favorite line so far?"></textarea>
+        <div class="review-saved" id="review-saved"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>Founded on pages, built by psets, ranked by readers.</footer>
+
+<div class="toast" id="toast"></div>
+<canvas id="confetti-canvas" hidden></canvas>
+
+<script>
+'use strict';
+
+/* =====================================================
+   Course R: The MIT Reading Game
+   Single file, no build step, no server, no dependencies.
+   Storage: window.storage when hosted, localStorage locally.
+   ===================================================== */
+
+const LOGO_SRC = document.querySelector('header img.logo').src;
+const TIM_SRC = document.getElementById('tim-img').src;
+
+/* ---------- Real MIT history, in order ---------- */
+const MILESTONE_BANK = [
+  { year: '1861', title: 'The charter is signed', text: 'William Barton Rogers wins approval from Massachusetts to found MIT, two days before the Civil War begins.' },
+  { year: '1865', title: 'First classes in Boston', text: 'Fifteen students start classes in rented space in Back Bay. Tuition: 100 dollars a year.' },
+  { year: '1868', title: 'Architecture, first in the nation', text: 'MIT launches the first professional architecture program in the United States, training engineers to design as well as build.' },
+  { year: '1871', title: 'Ellen Swallow Richards enrolls', text: 'She becomes the first woman admitted to MIT, arriving as a special student in chemistry.' },
+  { year: '1873', title: 'Ellen Swallow Richards graduates', text: 'The first woman to earn an MIT degree. She goes on to found the field of home economics and pioneer water quality science.' },
+  { year: '1882', title: 'Electrical engineering, first in America', text: 'MIT launches the first electrical engineering curriculum in the United States, inside the physics department.' },
+  { year: '1888', title: 'Chemical engineering takes shape', text: 'MIT introduces one of the nation\u2019s first dedicated chemical engineering courses, laying groundwork for an entire discipline.' },
+  { year: '1916', title: 'The move across the Charles', text: 'MIT leaves Boston for its new Cambridge campus. The Great Dome and Killian Court open, and a mock barge parade carries the charter across the river.' },
+  { year: '1930', title: 'The differential analyzer hums to life', text: 'Vannevar Bush and his students build an early analog computer that can solve equations no one could tackle by hand.' },
+  { year: '1932', title: 'Compton rebuilds the Institute', text: 'President Karl Taylor Compton pushes MIT beyond trade school roots and toward fundamental science.' },
+  { year: '1937', title: 'A thesis that rewires everything', text: 'Grad student Claude Shannon shows that on-off switches can perform logical operations, laying the foundation of digital circuit design.' },
+  { year: '1940', title: 'The Rad Lab opens', text: 'The Radiation Laboratory develops microwave radar for the Allies. By war\u2019s end it employs nearly 4,000 people and helps win World War II.' },
+  { year: '1941', title: 'Economics earns its own PhD', text: 'MIT launches a doctoral program in economics, seeding a department that will one day produce more than a dozen Nobel laureates.' },
+  { year: '1944', title: 'Project Whirlwind begins', text: 'What starts as a flight simulator becomes the first real-time digital computer and the ancestor of interactive computing.' },
+  { year: '1945', title: 'Bush imagines the Memex', text: 'Vannevar Bush publishes an essay describing a machine that stores and links a lifetime of documents. Decades later, it reads like a sketch of hypertext.' },
+  { year: '1946', title: 'Feedback gets its own lab', text: 'The Servomechanisms Laboratory opens, turning MIT\u2019s wartime control work into a standing research program on automatic systems.' },
+  { year: '1949', title: 'Humanities get a seat at the table', text: 'A faculty committee argues that science and engineering can\u2019t be separated from their human consequences, reshaping what every MIT student studies.' },
+  { year: '1951', title: 'Lincoln Laboratory founded', text: 'MIT stands up a federal lab for air defense. Its SAGE system pioneers networked computing across a continent.' },
+  { year: '1958', title: 'Political science becomes its own field', text: 'MIT approves a standalone PhD program in political science, ending decades of the subject living inside other departments.' },
+  { year: '1959', title: 'The AI Lab era starts', text: 'John McCarthy and Marvin Minsky launch artificial intelligence research at MIT, seeding a field that reshapes the world.' },
+  { year: '1961', title: 'NASA\u2019s first Apollo contract', text: 'The Instrumentation Lab wins the contract to build the Apollo Guidance Computer, the first major contract of the Moon program.' },
+  { year: '1961', title: 'Computing gets its first password', text: 'MIT\u2019s Compatible Time-Sharing System introduces the login password, so several people can share one computer without reading each other\u2019s files.' },
+  { year: '1962', title: 'Spacewar! goes live', text: 'Students feed a new PDP-1 computer a two-player space duel, creating what\u2019s widely considered the first multiplayer video game.' },
+  { year: '1963', title: 'Project MAC opens', text: 'A new lab pioneers time-sharing, letting many people use one computer at once, and becomes the seed of MIT\u2019s future AI and computer science labs.' },
+  { year: '1969', title: 'MIT software lands on the Moon', text: 'Apollo 11 touches down running guidance code led by Margaret Hamilton\u2019s team. The overloaded computer keeps flying because MIT designed it to.' },
+  { year: '1971', title: 'The MIT Museum opens its doors', text: 'A new museum starts collecting and exhibiting the inventions, oddities, and history that a century of MIT work has produced.' },
+  { year: '1973', title: 'Instrumentation Lab spins off', text: 'The lab that built the Apollo computer becomes the independent Charles Stark Draper Laboratory, separating classified defense work from the campus.' },
+  { year: '1976', title: 'Emacs starts spreading', text: 'Programmers at the AI Lab begin building a text editor that will still be running on computers fifty years later.' },
+  { year: '1977', title: 'RSA encryption is born', text: 'Rivest, Shamir, and Adleman publish public-key cryptography that still protects most of the internet\u2019s traffic today.' },
+  { year: '1978', title: 'A lab for information and decisions', text: 'Researchers studying communication theory and control systems join forces to found the Laboratory for Information and Decision Systems.' },
+  { year: '1982', title: 'The Whitehead Institute opens', text: 'A new biomedical research institute forms alongside MIT, and soon becomes one of the anchors of the genomics revolution.' },
+  { year: '1983', title: 'The GNU Project launches', text: 'Richard Stallman starts building a free operating system from an MIT office, founding the free software movement.' },
+  { year: '1984', title: 'Chips get a dedicated home', text: 'The Microsystems Technology Laboratories open, giving MIT researchers a shared home for building integrated circuits.' },
+  { year: '1985', title: 'The Media Lab opens', text: 'Nicholas Negroponte and Jerome Wiesner open a lab where technology meets design, spawning e-ink, Guitar Hero, and Scratch.' },
+  { year: '1989', title: 'Materials research gets a mission', text: 'The Materials Processing Center is founded to help American manufacturing compete as the Cold War winds down.' },
+  { year: '1990', title: 'The Genome Project gets underway', text: 'MIT\u2019s Whitehead Institute becomes one of the lead centers sequencing the human genome, a fifteen-year effort that redefines biology.' },
+  { year: '1994', title: 'The web moves in', text: 'Tim Berners-Lee brings the World Wide Web Consortium to MIT, making campus the standards home of the web.' },
+  { year: '1997', title: 'Kismet learns to make faces', text: 'Researcher Cynthia Breazeal builds a robot that reads and responds to human expressions, launching the field of social robotics.' },
+  { year: '1998', title: 'Biology becomes an engineering discipline', text: 'MIT starts formally blending molecular biology with engineering principles, a combination that becomes its own department a few years later.' },
+  { year: '2001', title: 'OpenCourseWare goes live', text: 'MIT starts publishing its course materials online for free, eventually sharing over 2,500 courses with the world.' },
+  { year: '2002', title: 'A center for turning ideas into companies', text: 'The Deshpande Center opens to help MIT researchers carry their lab work out into the marketplace.' },
+  { year: '2003', title: 'CSAIL is born', text: 'MIT merges its Laboratory for Computer Science and its AI Lab into CSAIL, instantly one of the largest research labs on campus.' },
+  { year: '2004', title: 'The Broad Institute launches', text: 'MIT and Harvard join forces on genomic medicine. It becomes one of the world\u2019s leading biomedical research centers.' },
+  { year: '2005', title: 'Biological Engineering becomes official', text: 'MIT establishes the Department of Biological Engineering, its first new engineering department in decades.' },
+  { year: '2010', title: 'An MIT idea becomes Moderna', text: 'Institute Professor Robert Langer co-founds a biotech company built on drug delivery research from his MIT lab. It later builds a COVID vaccine in record time.' },
+  { year: '2011', title: 'MIT turns 150', text: 'The Institute marks its sesquicentennial with a campus-wide festival of art, science, and technology.' },
+  { year: '2012', title: 'edX opens its doors', text: 'MIT and Harvard co-found edX, bringing free university courses to millions of learners online.' },
+  { year: '2012', title: 'Number one, for the first time', text: 'QS ranks MIT the top university in the world for the first time. It is the beginning of a very long streak.' },
+  { year: '2015', title: 'A Nobel Prize for DNA repair', text: 'Alumnus Paul Modrich wins the Nobel Prize in Chemistry for work explaining how cells fix damaged DNA.' },
+  { year: '2016', title: 'Gravitational waves detected', text: 'LIGO, co-led by MIT\u2019s Rainer Weiss, announces the first direct detection of gravitational waves.' },
+  { year: '2017', title: 'LIGO wins the Nobel Prize', text: 'Rainer Weiss shares the Nobel Prize in Physics for the discovery of gravitational waves, a hunt that began decades earlier at MIT.' },
+  { year: '2018', title: 'TESS heads for orbit', text: 'A satellite designed and built at MIT launches to search the sky for planets orbiting nearby stars.' },
+  { year: '2018', title: 'A quest for intelligence', text: 'MIT launches an Institute-wide effort to understand human intelligence and build machines that reflect it responsibly.' },
+  { year: '2018', title: 'A billion-dollar bet on computing', text: 'MIT announces the Schwarzman College of Computing, its biggest structural change in seventy years, to put computing at the center of every discipline.' },
+  { year: '2019', title: 'The College of Computing opens', text: 'The Schwarzman College of Computing officially opens its doors, reorganizing how MIT teaches and researches computing across every field.' },
+  { year: '2020', title: 'MIT answers a pandemic', text: 'Labs across campus pivot to rapid ventilator designs, testing methods, and vaccine science as the world faces COVID-19.' },
+  { year: '2021', title: 'A consortium for the climate', text: 'MIT launches the Climate and Sustainability Consortium, pairing academic research with industry to tackle global climate challenges.' },
+  { year: '2023', title: 'A new look for MIT', text: 'MIT unveils a refreshed visual identity, including the bold red wordmark that now appears on everything from banners to browser tabs.' }
+];
+
+const FINAL_MILESTONE = {
+  year: '2012 to today',
+  title: 'Number one in the world',
+  text: 'QS has ranked MIT the top university on Earth every single year since 2012. Mind and hand, proven again.'
+};
+
+/* Les Miserables by Victor Hugo has 365 chapters, the most in a
+   mainstream non-religious book, so that is the ceiling here. */
+const MAX_CHAPTERS = 365;
+
+/* More real MIT history. Merged with the bank above to form one deep,
+   verified, chronological pool. Used first before anything is generated. */
+const MILESTONE_EXTRAS = [
+  { year: '1866', title: 'The Rogers Building opens', text: 'MIT settles into its first real home, the Rogers Building in Boston\u2019s Back Bay, named for its founder.' },
+  { year: '1881', title: 'Francis Amasa Walker takes charge', text: 'The economist and Civil War general becomes president and grows MIT from a few hundred students into a serious institution.' },
+  { year: '1902', title: 'Electrical engineering gets a department', text: 'MIT turns its pioneering EE curriculum into a full Department of Electrical Engineering, the famous Course 6.' },
+  { year: '1909', title: 'Maclaurin plans the great move', text: 'President Richard Maclaurin begins the campaign to cross the Charles and build a permanent campus in Cambridge.' },
+  { year: '1914', title: 'Tim the Beaver is chosen', text: 'MIT adopts the beaver as its mascot, nature\u2019s engineer, praised for building and for working hardest after dark.' },
+  { year: '1916', title: 'Mr. Smith\u2019s mystery gift', text: 'An anonymous donor known only as Mr. Smith funds much of the new campus. Years later he is revealed as George Eastman of Kodak.' },
+  { year: '1922', title: 'Raytheon is founded', text: 'MIT\u2019s Vannevar Bush co-founds Raytheon, one of the first great companies born from Institute research.' },
+  { year: '1929', title: 'The Brass Rat tradition begins', text: 'MIT\u2019s class ring, the Brass Rat, takes its enduring form, worn beaver-out until graduation.' },
+  { year: '1943', title: 'Building 20 goes up', text: 'A temporary plywood building rises for wartime radar work. It stays for decades and incubates radio astronomy, linguistics, and hacker culture.' },
+  { year: '1946', title: 'The Research Lab of Electronics opens', text: 'MIT turns its radar know-how into the Research Laboratory of Electronics, a powerhouse of postwar science.' },
+  { year: '1948', title: 'Wiener publishes Cybernetics', text: 'MIT mathematician Norbert Wiener names and defines cybernetics, the study of control and communication in animals and machines.' },
+  { year: '1949', title: 'Baker House curves into place', text: 'Finnish architect Alvar Aalto designs a wave-shaped dormitory on Memorial Drive, giving every room a river view.' },
+  { year: '1951', title: 'The world comes to campus', text: 'MIT founds its Center for International Studies, turning the Institute\u2019s gaze toward global problems.' },
+  { year: '1952', title: 'The Sloan School is born', text: 'MIT\u2019s management program becomes the School of Industrial Management, later renamed for benefactor Alfred P. Sloan.' },
+  { year: '1955', title: 'Saarinen reshapes the skyline', text: 'Kresge Auditorium and the MIT Chapel open, two Eero Saarinen landmarks of modern American architecture.' },
+  { year: '1956', title: 'Thermo Electron spins out', text: 'MIT engineer George Hatsopoulos founds Thermo Electron, later Thermo Fisher, a giant of scientific instruments.' },
+  { year: '1957', title: 'DEC and the minicomputer', text: 'MIT\u2019s Ken Olsen founds Digital Equipment Corporation, whose minicomputers help pull computing out of the basement.' },
+  { year: '1957', title: 'A scientist advises the president', text: 'MIT President James Killian becomes the first full-time White House science advisor after Sputnik.' },
+  { year: '1960', title: 'Teradyne is founded', text: 'Two MIT classmates start Teradyne, whose automated testers help build the modern semiconductor industry.' },
+  { year: '1964', title: 'The Green Building rises', text: 'I.M. Pei designs the Cecil and Ida Green Building, still the tallest in Cambridge, home to earth and planetary science.' },
+  { year: '1964', title: 'Bose Corporation is founded', text: 'MIT professor Amar Bose turns his research on sound and psychoacoustics into one of the best-known audio companies in the world.' },
+  { year: '1965', title: 'Analog Devices is founded', text: 'MIT graduate Ray Stata co-founds Analog Devices, a cornerstone of the analog chip industry.' },
+  { year: '1969', title: 'Undergraduates get into the lab', text: 'MIT launches UROP, the Undergraduate Research Opportunities Program, putting first-years to work on real research.' },
+  { year: '1971', title: 'The Independent Activities Period begins', text: 'MIT clears all of January for anything students want to learn, teach, or build. IAP becomes a beloved fixture.' },
+  { year: '1972', title: 'The Limits to Growth', text: 'MIT system dynamics researchers publish a world model of population and resources that sparks decades of debate.' },
+  { year: '1978', title: 'Biogen is co-founded', text: 'MIT biologist Phillip Sharp helps launch Biogen, one of the first great biotechnology companies.' },
+  { year: '1981', title: 'The Mystery Hunt begins', text: 'MIT holds its first Mystery Hunt, a fiendish puzzle marathon that now draws thousands of solvers each January.' },
+  { year: '1987', title: 'Two Nobel Prizes in one year', text: 'Robert Solow wins the Nobel in economics for growth theory, and Susumu Tonegawa wins in medicine for antibody diversity.' },
+  { year: '1990', title: 'iRobot is founded', text: 'MIT roboticists start iRobot, later famous for the Roomba and for bomb-disposal robots used around the world.' },
+  { year: '1992', title: 'Boston Dynamics steps out', text: 'MIT\u2019s Marc Raibert spins off Boston Dynamics, whose walking and running robots redefine what machines can do.' },
+  { year: '1993', title: 'A Nobel for split genes', text: 'MIT\u2019s Phillip Sharp shares the Nobel Prize in medicine for discovering that genes can come in pieces.' },
+  { year: '1994', title: 'A police car parks on the Dome', text: 'In MIT\u2019s most legendary hack, students assemble a full campus police cruiser on top of the Great Dome overnight.' },
+  { year: '1995', title: 'A Nobel for saving the ozone', text: 'MIT chemist Mario Molina shares the Nobel Prize for showing how CFCs destroy the ozone layer.' },
+  { year: '1998', title: 'Akamai speeds up the web', text: 'MIT mathematician Tom Leighton and student Daniel Lewin found Akamai, whose network still carries much of the internet.' },
+  { year: '2000', title: 'The McGovern Institute opens', text: 'A landmark gift creates the McGovern Institute for Brain Research, chasing the biggest questions about the mind.' },
+  { year: '2001', title: 'A Nobel for a new state of matter', text: 'MIT physicist Wolfgang Ketterle shares the Nobel Prize for creating Bose-Einstein condensates, matter near absolute zero.' },
+  { year: '2002', title: 'Simmons Hall, the sponge', text: 'Steven Holl\u2019s porous, sky-lit dormitory opens, one of the boldest buildings on campus.' },
+  { year: '2004', title: 'The Stata Center opens', text: 'Frank Gehry\u2019s tilting, tumbling Stata Center opens, housing computer science, AI, linguistics, and philosophy.' },
+  { year: '2005', title: 'A Nobel for building molecules', text: 'MIT chemist Richard Schrock shares the Nobel Prize for metathesis, a smarter way to build organic compounds.' },
+  { year: '2006', title: 'HubSpot is founded', text: 'Two MIT Sloan classmates start HubSpot, helping invent modern inbound marketing software.' },
+  { year: '2007', title: 'The Koch Institute is created', text: 'A major gift launches the Koch Institute, pairing engineers and biologists against cancer under one roof.' },
+  { year: '2007', title: 'Dropbox begins in a dorm', text: 'MIT student Drew Houston, tired of forgetting his USB drive, starts Dropbox and changes how files sync.' },
+  { year: '2008', title: 'A Turing Award for reliable code', text: 'MIT\u2019s Barbara Liskov wins the Turing Award for ideas about data abstraction that shape how software is written.' },
+  { year: '2009', title: 'The Ragon Institute forms', text: 'MIT, Harvard, and Mass General join forces to harness the immune system against HIV and other diseases.' },
+  { year: '2010', title: 'A Nobel for market frictions', text: 'MIT economist Peter Diamond shares the Nobel Prize for explaining why buyers and sellers don\u2019t always find each other.' },
+  { year: '2012', title: 'A Turing Award for cryptography', text: 'MIT\u2019s Shafi Goldwasser and Silvio Micali win the Turing Award for the foundations of modern cryptography.' },
+  { year: '2014', title: 'A Turing Award for databases', text: 'MIT\u2019s Michael Stonebraker wins the Turing Award for decades of work on the database systems that run the world.' },
+  { year: '2016', title: 'A Turing Award for the web', text: 'Tim Berners-Lee, who invented the web and brought its standards body to MIT, wins the Turing Award.' },
+  { year: '2016', title: 'A Nobel for contract theory', text: 'MIT economist Bengt Holmstrom shares the Nobel Prize for explaining how to design contracts and incentives.' },
+  { year: '2018', title: 'TESS launches to hunt planets', text: 'A satellite conceived and built at MIT rockets into orbit to survey the whole sky for planets around nearby stars.' },
+  { year: '2019', title: 'A Nobel for fighting poverty', text: 'MIT economists Esther Duflo and Abhijit Banerjee share the Nobel Prize for testing what actually reduces poverty.' }
+];
+
+/* One deep chronological pool of verified history. */
+const REAL_POOL = MILESTONE_BANK.concat(MILESTONE_EXTRAS)
+  .map(m => ({ ...m, yearNum: parseInt(m.year, 10) }))
+  .sort((a, b) => a.yearNum - b.yearNum);
+
+const TIM_LINES = {
+  start: [
+    'Let\u2019s get to work. The Dome doesn\u2019t build itself.',
+    'Page one is the hardest brick. Lay it.',
+    'Beavers build dams. You build reading streaks.'
+  ],
+  low: [
+    'Good pace. Rogers started with fifteen students and a rented room.',
+    'Keep chewing through it. That\u2019s literally my whole thing.',
+    'Every page is tuition paid to yourself.'
+  ],
+  mid: [
+    'Halfway-ish. The Rad Lab ran on less sleep than you.',
+    'You can see the Charles from here. Keep walking.',
+    'IHTFP. The good meaning today.'
+  ],
+  high: [
+    'The sun is lining up with the corridor. Almost MIThenge.',
+    'Smell that? That\u2019s the home stretch.',
+    'One more pset and the rankings committee starts calling.'
+  ],
+  milestone: [
+    'Pset done. Nap earned.',
+    'Stamp it in the history books.',
+    'That one goes on the Dome.'
+  ],
+  sprintDone: [
+    'Sprint done. Hydrate, stretch, brag.',
+    'Bell rung. You out-focused a squirrel.',
+    'Nice sprint. Tech is hell, reading is heaven.'
+  ]
+};
+
+/* ---------- Storage: window.storage first, localStorage fallback ---------- */
+const SAVE_KEY = 'mit-reading-game-v1';
+
+const store = {
+  backend: null, // 'window' | 'local'
+  async detect() {
+    if (typeof window.storage === 'object' && window.storage && typeof window.storage.get === 'function') {
+      try {
+        await window.storage.set(SAVE_KEY + ':ping', '1');
+        this.backend = 'window';
+        return;
+      } catch (e) { /* fall through */ }
+    }
+    this.backend = 'local';
+  },
+  async load() {
+    try {
+      if (this.backend === 'window') {
+        try {
+          const res = await window.storage.get(SAVE_KEY);
+          return res && res.value ? JSON.parse(res.value) : null;
+        } catch (e) { return null; } // key not found throws
+      }
+      const raw = localStorage.getItem(SAVE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      console.error('Load failed:', e);
+      return null;
+    }
+  },
+  async save(data) {
+    const raw = JSON.stringify(data);
+    try {
+      if (this.backend === 'window') {
+        await window.storage.set(SAVE_KEY, raw);
+      } else {
+        localStorage.setItem(SAVE_KEY, raw);
+      }
+    } catch (e) {
+      console.error('Save failed:', e);
+      toast('Could not save progress. Check storage permissions.');
+    }
+  }
+};
+
+/* ---------- State ---------- */
+let state = {
+  v: 1,
+  books: [],
+  activeId: null,
+  sound: true
+};
+
+function migrate(data) {
+  if (!data || typeof data !== 'object') return null;
+  if (!Array.isArray(data.books)) return null;
+  // v1 is current. Future versions migrate forward here.
+  data.v = 1;
+  data.sound = data.sound !== false;
+  data.books.forEach(b => {
+    b.pagesRead = clamp(num(b.pagesRead), 0, num(b.totalPages) || 0);
+    b.sprints = num(b.sprints);
+    b.rating = clamp(num(b.rating), 0, 5);
+    b.notes = typeof b.notes === 'string' ? b.notes : '';
+    if (!Array.isArray(b.chapters)) b.chapters = [];
+    b.chapters.forEach(c => { c.done = !!c.done; });
+  });
+  return data;
+}
+
+function num(x) { const n = Number(x); return isFinite(n) ? n : 0; }
+function clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
+function uid() { return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+function activeBook() {
+  return state.books.find(b => b.id === state.activeId) || null;
+}
+
+async function persist() { await store.save(state); }
+
+/* ---------- Milestone generation ----------
+   Give the game any chapter count from 1 to 365 and it returns exactly that
+   many milestones, in chronological order, with no repeats.
+   - If the book fits inside the real-history pool, every milestone is a real,
+     verified MIT event, sampled evenly across 1861 to today.
+   - If the book has more chapters than we have documented headline events, all
+     the real events are placed first, then the gaps are filled with dated
+     "the Institute keeps rising" beats so the climb never stalls. Every one of
+     those is editable, and the year is interpolated between real neighbours. */
+
+const PROGRESS_TRACKS = [
+  {
+    title: () => 'The rankings tighten their grip',
+    text: p => `The world\u2019s league tables again seat MIT at roughly #${Math.max(1, Math.round(160 * Math.pow(1 - p, 1.9)))}. The only direction left is up.`
+  },
+  {
+    title: () => 'Another year of research pours out',
+    text: p => `Institute labs publish around ${Math.round(600 + p * 4200).toLocaleString()} peer-reviewed papers. The librarians order more shelving.`
+  },
+  {
+    title: () => 'The patent office hears from Cambridge',
+    text: p => `MIT inventors file roughly ${Math.round(60 + p * 320)} new patents this year. Mind and hand, notarized.`
+  },
+  {
+    title: () => 'The alumni keep founding companies',
+    text: p => `A fresh wave of graduates launches about ${Math.round(30 + p * 170)} new ventures. Kendall Square gets a little more crowded.`
+  },
+  {
+    title: () => 'A new professorship is endowed',
+    text: () => 'A donor funds another named chair, and a leading mind gets a permanent home at the Institute.'
+  },
+  {
+    title: () => 'A new class crosses Killian Court',
+    text: p => `Around ${Math.round(1200 + p * 2000).toLocaleString()} graduates scatter across the world, diplomas in hand and rings turned inward.`
+  },
+  {
+    title: () => 'Washington comes knocking again',
+    text: () => 'Federal agencies renew major research funding, and MIT\u2019s labs keep answering the nation\u2019s hardest questions.'
+  },
+  {
+    title: () => 'The endowment climbs',
+    text: p => `The endowment reaches about $${(1 + p * 23).toFixed(1)} billion, quietly funding scholarships, labs, and moonshots alike.`
+  },
+  {
+    title: () => 'Free knowledge travels farther',
+    text: p => `MIT\u2019s open courses pass another ${Math.round(2 + p * 18)} million learners worldwide. Tuition-free and borderless.`
+  },
+  {
+    title: () => 'A new lab wing opens on the corridor',
+    text: () => 'Construction crews hand over another stretch of clean rooms and benches. There is always space for one more experiment.'
+  },
+  {
+    title: () => 'Undergraduates join the frontier',
+    text: p => `Hundreds more first- and second-years enter faculty labs through UROP, ${Math.round(85 + p * 10)} percent of the class touching real research before they graduate.`
+  },
+  {
+    title: () => 'The honors pile higher',
+    text: () => 'Another cluster of MIT faculty collect national medals, fellowships, and society memberships. The trophy case needs an annex.'
+  },
+  {
+    title: () => 'The startup incubators fill up',
+    text: () => 'MIT\u2019s entrepreneurship programs graduate another cohort of founders, and venture scouts book their flights to Boston.'
+  },
+  {
+    title: () => 'Global partners sign on',
+    text: () => 'New research partnerships link MIT with universities and industry across several more countries. The Institute\u2019s reach outgrows Cambridge again.'
+  }
+];
+
+const PROGRESS_OPENERS = ['', 'Momentum holds. ', 'The climb continues. ', 'No slowing down. ', 'Steady as she goes. '];
+
+function makeProgressMilestone(seq, year, p) {
+  const track = PROGRESS_TRACKS[seq % PROGRESS_TRACKS.length];
+  const wave = Math.floor(seq / PROGRESS_TRACKS.length);
+  const opener = PROGRESS_OPENERS[wave % PROGRESS_OPENERS.length];
+  return {
+    year: String(year),
+    title: track.title(),
+    text: opener + track.text(p),
+    generated: true
+  };
+}
+
+function generateMilestones(chapterCount) {
+  const n = clamp(Math.round(num(chapterCount)), 1, MAX_CHAPTERS);
+  const R = REAL_POOL.length;
+
+  // Fits inside real history: sample evenly, all verified, in order.
+  if (n <= R) {
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const idx = n === 1 ? R - 1 : Math.round(i * (R - 1) / (n - 1));
+      const m = REAL_POOL[idx];
+      out.push({ year: m.year, title: m.title, text: m.text });
+    }
+    return out;
+  }
+
+  // Bigger than the real pool: place every real event, fill the rest.
+  const slots = new Array(n).fill(null);
+  REAL_POOL.forEach((m, i) => {
+    let pos = clamp(Math.round((i / (R - 1)) * (n - 1)), 0, n - 1);
+    if (slots[pos]) {
+      let d = 1;
+      while (d <= n) {
+        if (pos + d < n && !slots[pos + d]) { pos += d; break; }
+        if (pos - d >= 0 && !slots[pos - d]) { pos -= d; break; }
+        d++;
+      }
+    }
+    slots[pos] = { year: m.year, title: m.title, text: m.text };
+  });
+
+  // Interpolated year for any fraction, using the real events as control points.
+  function yearAt(f) {
+    const x = f * (R - 1);
+    const i0 = Math.floor(x), i1 = Math.min(R - 1, i0 + 1);
+    const t = x - i0;
+    return Math.round(REAL_POOL[i0].yearNum + (REAL_POOL[i1].yearNum - REAL_POOL[i0].yearNum) * t);
+  }
+
+  let seq = 0;
+  for (let k = 0; k < n; k++) {
+    if (slots[k]) continue;
+    const p = n === 1 ? 1 : k / (n - 1);
+    slots[k] = makeProgressMilestone(seq++, yearAt(p), p);
+  }
+
+  // Keep displayed years non-decreasing for a clean timeline.
+  let prev = REAL_POOL[0].yearNum;
+  for (let k = 0; k < n; k++) {
+    let y = parseInt(slots[k].year, 10);
+    if (!isFinite(y) || y < prev) { y = prev; slots[k].year = String(prev); }
+    prev = y;
+  }
+  return slots;
+}
+
+/* ---------- Metrics: pages read drive MIT's rise ---------- */
+function metrics(book) {
+  const total = Math.max(1, book.totalPages);
+  const p = clamp(book.pagesRead / total, 0, 1);
+  return {
+    p,
+    rank: Math.max(1, Math.round(500 * Math.pow(1 - p, 2.2) + 1 - p)), // #501 down to #1
+    papers: Math.round(150 + (4200 - 150) * Math.pow(p, 1.35)),
+    nobels: Math.floor(105 * Math.pow(p, 1.6)),
+    endow: 0.5 + (24.6 - 0.5) * Math.pow(p, 1.5)
+  };
+}
+
+/* ---------- Sounds via Web Audio, no files ---------- */
+let audioCtx = null;
+function ac() {
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    audioCtx = new AC();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq, start, dur, type, gain) {
+  const ctx = ac(); if (!ctx) return;
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = type || 'sine';
+  o.frequency.value = freq;
+  const t = ctx.currentTime + start;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain || 0.12, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t + dur + 0.05);
+}
+const sfx = {
+  click() { if (state.sound) tone(880, 0, 0.08, 'triangle', 0.06); },
+  page() { if (!state.sound) return; tone(523, 0, 0.1, 'triangle', 0.08); tone(659, 0.07, 0.12, 'triangle', 0.07); },
+  milestone() {
+    if (!state.sound) return;
+    tone(392, 0, 0.22, 'sawtooth', 0.05); tone(523, 0.14, 0.22, 'sawtooth', 0.06);
+    tone(659, 0.28, 0.3, 'sawtooth', 0.06); tone(784, 0.42, 0.45, 'sawtooth', 0.07);
+  },
+  win() {
+    if (!state.sound) return;
+    [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.16, 0.5, 'sawtooth', 0.06));
+    [262, 330, 392].forEach(f => tone(f, 0.64, 1.2, 'sine', 0.05));
+  },
+  bell() { if (!state.sound) return; tone(1318, 0, 0.7, 'sine', 0.1); tone(1976, 0.02, 0.5, 'sine', 0.04); tone(1318, 0.8, 0.7, 'sine', 0.08); }
+};
+
+/* ---------- Toast ---------- */
+let toastTimer = null;
+function toast(html, ms) {
+  const el = document.getElementById('toast');
+  el.innerHTML = html;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), ms || 3200);
+}
+
+/* ---------- Tim ---------- */
+function timSay(pool) {
+  const lines = TIM_LINES[pool] || TIM_LINES.start;
+  document.getElementById('tim-line').textContent = lines[Math.floor(Math.random() * lines.length)];
+  const img = document.getElementById('tim-img');
+  img.classList.remove('bounce');
+  void img.offsetWidth;
+  img.classList.add('bounce');
+}
+function timMood(p) {
+  if (p >= 0.75) return 'high';
+  if (p >= 0.4) return 'mid';
+  if (p > 0) return 'low';
+  return 'start';
+}
+
+/* ---------- Rendering ---------- */
+function render() {
+  const book = activeBook();
+  const main = document.getElementById('main-app');
+  if (!book) { main.hidden = true; return; }
+  main.hidden = false;
+
+  const idx = state.books.indexOf(book);
+  document.getElementById('course-tag').textContent = 'R.' + String(idx + 1).padStart(3, '0');
+  document.getElementById('bk-title').textContent = book.title;
+  document.getElementById('bk-author').textContent = book.author ? 'by ' + book.author : '';
+  document.getElementById('cur-page').textContent = book.pagesRead;
+  document.getElementById('tot-pages').textContent = book.totalPages;
+  document.getElementById('page-input').max = book.totalPages;
+
+  const m = metrics(book);
+  document.getElementById('pct-label').textContent = Math.round(m.p * 100) + '%';
+
+  // corridor visuals
+  const sun = document.getElementById('henge-sun');
+  sun.setAttribute('r', String(8 + 26 * m.p));
+  sun.setAttribute('opacity', String(0.12 + 0.88 * m.p));
+
+  // floor fill: trapezoid grows from bottom (y=260) toward y=158
+  const yTop = 260 - 102 * m.p;
+  const half = t => 100 - 52 * t; // at t=0 halfwidth 100 (x 300..500), at t=1 halfwidth 48 (348..452)
+  const t = (260 - yTop) / 102;
+  const fill = document.getElementById('floor-fill');
+  fill.setAttribute('points',
+    `300,260 500,260 ${400 + half(t)},${yTop} ${400 - half(t)},${yTop}`);
+  // walker
+  const walker = document.getElementById('walker');
+  walker.setAttribute('cy', String(252 - 96 * m.p));
+  walker.setAttribute('r', String(7 - 3.5 * m.p));
+
+  renderStats(m, book);
+  renderChapters(book);
+  renderReview(book);
+  document.getElementById('sprint-count').textContent =
+    book.sprints === 1 ? '1 sprint logged for this book' :
+    book.sprints > 1 ? book.sprints + ' sprints logged for this book' : 'No sprints yet';
+}
+
+function renderStats(m, book) {
+  const doneCh = book.chapters.filter(c => c.done).length;
+  const fmtRank = m.rank === 1 ? '#1' : '#' + m.rank.toLocaleString();
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat rank">
+      <div class="k">QS World Ranking</div>
+      <div class="v">${fmtRank}</div>
+      <div class="d">${m.rank === 1 ? 'Top of the world' : 'Climbing with every page'}</div>
+    </div>
+    <div class="stat">
+      <div class="k">Research papers / yr</div>
+      <div class="v">${m.papers.toLocaleString()}</div>
+      <div class="d">Peer-reviewed output</div>
+    </div>
+    <div class="stat">
+      <div class="k">Nobel affiliates</div>
+      <div class="v">${m.nobels}</div>
+      <div class="d">Real MIT count: 105</div>
+    </div>
+    <div class="stat">
+      <div class="k">Endowment</div>
+      <div class="v">$${m.endow.toFixed(1)}B</div>
+      <div class="d">${doneCh}/${book.chapters.length} psets funded it</div>
+    </div>`;
+}
+
+function renderChapters(book) {
+  const list = document.getElementById('chapter-list');
+  list.innerHTML = book.chapters.map((c, i) => {
+    const ms = c.milestone || {};
+    const body = c.done
+      ? `<div class="ch-milestone">
+           <span class="yr">${esc(ms.year || '')}</span>
+           <span class="mt">${esc(ms.title || 'Milestone')}</span>
+           <span class="mx">${esc(ms.text || '')}</span>
+         </div>`
+      : `<div class="ch-locked">Milestone sealed until this pset is done.</div>`;
+    const action = c.done
+      ? `<button class="btn-undone" data-undo="${i}">undo</button>`
+      : `<button class="btn-complete" data-done="${i}">Complete pset</button>`;
+    return `
+      <div class="chapter ${c.done ? 'done' : ''}">
+        <div class="ch-marker">${c.done ? '\u2713' : i + 1}</div>
+        <div class="ch-body">
+          <div class="ch-name">${esc(c.name)}</div>
+          ${body}
+        </div>
+        <div class="ch-action">${action}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderReview(book) {
+  const starsEl = document.getElementById('stars');
+  starsEl.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const b = document.createElement('button');
+    b.textContent = '\u2605';
+    b.setAttribute('aria-label', i + ' star' + (i > 1 ? 's' : ''));
+    if (i <= book.rating) b.classList.add('on');
+    b.addEventListener('click', async () => {
+      book.rating = (book.rating === i) ? 0 : i;
+      sfx.click();
+      await persist();
+      renderReview(book);
+    });
+    starsEl.appendChild(b);
+  }
+  const notes = document.getElementById('review-notes');
+  if (notes.value !== book.notes) notes.value = book.notes;
+}
+
+/* ---------- Page logging ---------- */
+async function setPage(newPage, viaAdd) {
+  const book = activeBook(); if (!book || book.finished) return;
+  const prev = book.pagesRead;
+  book.pagesRead = clamp(Math.round(num(newPage)), 0, book.totalPages);
+  if (book.pagesRead === prev) { render(); return; }
+
+  const before = metrics({ ...book, pagesRead: prev });
+  const after = metrics(book);
+  await persist();
+  render();
+
+  if (book.pagesRead > prev) {
+    sfx.page();
+    if (before.rank !== after.rank && after.rank > 1) {
+      toast(`MIT climbs to <b>#${after.rank.toLocaleString()}</b> in the QS rankings. ${book.pagesRead - prev} pages well spent.`);
+    }
+    const mood = timMood(after.p);
+    if (Math.random() < 0.5 || !viaAdd) timSay(mood);
+  }
+  checkCompletion();
+}
+
+/* ---------- Chapter completion ---------- */
+async function completeChapter(i) {
+  const book = activeBook(); if (!book) return;
+  const c = book.chapters[i]; if (!c || c.done) return;
+  c.done = true;
+  await persist();
+  render();
+  sfx.milestone();
+  timSay('milestone');
+  const ms = c.milestone || {};
+  toast(`<span class="yr">${esc(ms.year || '')}</span> &nbsp;<b>${esc(ms.title || 'Milestone unlocked')}</b>`, 4200);
+  checkCompletion();
+}
+
+async function undoChapter(i) {
+  const book = activeBook(); if (!book) return;
+  const c = book.chapters[i]; if (!c || !c.done) return;
+  c.done = false;
+  book.finished = false;
+  await persist();
+  render();
+}
+
+/* ---------- Completion / game over ---------- */
+function isComplete(book) {
+  return book.totalPages > 0 &&
+    book.pagesRead >= book.totalPages &&
+    book.chapters.length > 0 &&
+    book.chapters.every(c => c.done);
+}
+
+async function checkCompletion() {
+  const book = activeBook(); if (!book) return;
+  if (isComplete(book) && !book.finished) {
+    book.finished = true;
+    await persist();
+    showGameOver(book);
+  }
+}
+
+function showGameOver(book) {
+  sfx.win();
+  const wrap = document.createElement('div');
+  wrap.className = 'gameover';
+  wrap.id = 'gameover';
+  wrap.innerHTML = `
+    <div class="go-inner">
+      <div class="go-sun" aria-hidden="true"></div>
+      <h2>MIThenge. Book complete.</h2>
+      <div class="go-rank">#1</div>
+      <p><b>${esc(FINAL_MILESTONE.title)}.</b> ${esc(FINAL_MILESTONE.text)}</p>
+      <p>You finished <i>${esc(book.title)}</i>${book.author ? ' by ' + esc(book.author) : ''}. Every pset, every page. The Institute thanks you. So does the country that keeps calling it for help.</p>
+      <img class="tim-go" src="${TIM_SRC}" alt="Tim the Beaver celebrating">
+      <div class="go-actions">
+        <button class="btn btn-red" id="go-review">Write my review</button>
+        <button class="btn btn-ghost" id="go-library">Start another book</button>
+        <button class="btn btn-ghost" id="go-close">Back to the corridor</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  confettiBurst();
+  wrap.querySelector('#go-close').addEventListener('click', () => wrap.remove());
+  wrap.querySelector('#go-review').addEventListener('click', () => {
+    wrap.remove();
+    document.getElementById('review-notes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('review-notes').focus();
+  });
+  wrap.querySelector('#go-library').addEventListener('click', () => { wrap.remove(); openLibrary(); });
+}
+
+/* ---------- Confetti ---------- */
+function confettiBurst() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext && canvas.getContext('2d');
+  if (!ctx) return;
+  canvas.hidden = false;
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  const colors = ['#a31f34', '#ff1423', '#c8a24a', '#ffffff', '#8b959e'];
+  const parts = Array.from({ length: 160 }, () => ({
+    x: Math.random() * canvas.width,
+    y: -20 - Math.random() * canvas.height * 0.5,
+    w: 6 + Math.random() * 6,
+    h: 8 + Math.random() * 8,
+    vy: 2 + Math.random() * 3.5,
+    vx: -1.5 + Math.random() * 3,
+    rot: Math.random() * Math.PI,
+    vr: -0.12 + Math.random() * 0.24,
+    color: colors[Math.floor(Math.random() * colors.length)]
+  }));
+  const t0 = performance.now();
+  function frame(now) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if (now - t0 < 6000) requestAnimationFrame(frame);
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.hidden = true; }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Study sprint (drift-proof, wall clock) ---------- */
+const sprint = {
+  minutes: 25,
+  endAt: null,
+  tickId: null,
+  running: false
+};
+function fmtTime(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function sprintTick() {
+  if (!sprint.running) return;
+  const left = sprint.endAt - Date.now();
+  document.getElementById('timer-display').textContent = fmtTime(left);
+  if (left <= 0) finishSprint();
+}
+async function finishSprint() {
+  sprint.running = false;
+  clearInterval(sprint.tickId);
+  document.getElementById('sprint-panel').classList.remove('running');
+  document.getElementById('btn-sprint').textContent = 'Start sprint';
+  document.getElementById('timer-display').textContent = fmtTime(sprint.minutes * 60000);
+  sfx.bell();
+  timSay('sprintDone');
+  const book = activeBook();
+  if (book) {
+    book.sprints = num(book.sprints) + 1;
+    await persist();
+    render();
+  }
+  toast('Sprint complete. Log the pages you covered.');
+}
+function toggleSprint() {
+  const btn = document.getElementById('btn-sprint');
+  const panel = document.getElementById('sprint-panel');
+  if (sprint.running) {
+    sprint.running = false;
+    clearInterval(sprint.tickId);
+    panel.classList.remove('running');
+    btn.textContent = 'Start sprint';
+    document.getElementById('timer-display').textContent = fmtTime(sprint.minutes * 60000);
+    return;
+  }
+  sprint.running = true;
+  sprint.endAt = Date.now() + sprint.minutes * 60000;
+  panel.classList.add('running');
+  btn.textContent = 'Stop';
+  sfx.click();
+  clearInterval(sprint.tickId);
+  sprint.tickId = setInterval(sprintTick, 250);
+  sprintTick();
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) sprintTick(); });
+window.addEventListener('focus', sprintTick);
+
+/* ---------- Modals ---------- */
+function closeModal() {
+  const m = document.getElementById('active-modal');
+  if (m) m.remove();
+}
+function openModal(html) {
+  closeModal();
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-backdrop';
+  wrap.id = 'active-modal';
+  wrap.innerHTML = `<div class="modal">${html}</div>`;
+  wrap.addEventListener('click', e => { if (e.target === wrap) closeModal(); });
+  document.body.appendChild(wrap);
+  return wrap;
+}
+
+/* ---------- Onboarding / edit book ---------- */
+function openBookForm(existing) {
+  const isNew = !existing;
+
+  // Working copy of chapters. Source of truth while the form is open.
+  let work;
+  let initTitle = '', initAuthor = '', initPages = 300;
+  if (isNew) {
+    const startCount = 12;
+    const ms = generateMilestones(startCount);
+    work = ms.map((m, i) => ({ name: 'Chapter ' + (i + 1), done: false, milestone: m }));
+  } else {
+    work = existing.chapters.map(c => ({
+      name: c.name, done: !!c.done, milestone: { ...(c.milestone || {}) }
+    }));
+    initTitle = existing.title; initAuthor = existing.author; initPages = existing.totalPages;
+  }
+
+  const modal = openModal(`
+    ${isNew ? `
+      <div class="onboard-mast">
+        <img class="logo-mast" src="${LOGO_SRC}" alt="">
+        <img class="tim-hello" src="${TIM_SRC}" alt="">
+      </div>
+      <h2>Register your course</h2>
+      <div class="modal-sub">Tell the Registrar what you're reading. Every chapter becomes a pset, and finishing a pset unlocks a milestone in MIT's rise. Set your chapter count and the milestones generate to match, up to ${MAX_CHAPTERS}.</div>
+    ` : `
+      <h2>Edit course details</h2>
+      <div class="modal-sub">Change anything. Progress on finished psets is kept unless you shrink the chapter count past it.</div>
+    `}
+    <div class="field"><label>Book title</label><input type="text" id="f-title" value="${esc(initTitle)}" placeholder="e.g. Les Mis\u00e9rables"></div>
+    <div class="field-row">
+      <div class="field"><label>Author</label><input type="text" id="f-author" value="${esc(initAuthor)}" placeholder="Optional"></div>
+      <div class="field"><label>Total pages</label><input type="number" id="f-pages" min="1" value="${esc(initPages)}"></div>
+    </div>
+    <div class="field">
+      <label>Number of chapters (max ${MAX_CHAPTERS})</label>
+      <div class="count-row">
+        <input type="number" id="f-count" min="1" max="${MAX_CHAPTERS}" value="${work.length}">
+        <button class="btn btn-ghost" id="f-apply" type="button">Generate milestones</button>
+        <span class="count-note" id="f-count-note"></span>
+      </div>
+      <div class="hint">Set how many chapters your book has and the game auto-builds one milestone per chapter, in chronological order. ${REAL_POOL.length} of them are real, documented MIT events; beyond that the timeline fills with MIT's continued climb. Every milestone is editable below.</div>
+    </div>
+    <div class="field">
+      <label>Chapters and milestones</label>
+      <div id="ch-list" class="ch-list"></div>
+    </div>
+    <div class="err" id="f-err"></div>
+    <div class="modal-actions">
+      ${(isNew && state.books.length) || !isNew ? '<button class="btn btn-ghost" id="f-cancel">Cancel</button>' : ''}
+      <button class="btn btn-red" id="f-save">${isNew ? 'Enroll and start reading' : 'Save changes'}</button>
+    </div>
+  `);
+
+  const listEl = modal.querySelector('#ch-list');
+  const countInput = modal.querySelector('#f-count');
+  const countNote = modal.querySelector('#f-count-note');
+
+  function rowHtml(i, c) {
+    const ms = c.milestone || {};
+    return `<div class="ch-editor" data-row="${i}">
+        <div class="ch-ed-head">
+          <span class="num">${i + 1}</span>
+          <input type="text" class="ed-ch-name" data-i="${i}" value="${esc(c.name)}" placeholder="Chapter title">
+          <button class="ms-toggle" type="button" data-toggle="${i}" title="Edit this milestone">edit</button>
+        </div>
+        <div class="ms-preview" data-prev="${i}"><span class="yr">${esc(ms.year || '')}</span> ${esc(ms.title || '')}</div>
+        <div class="ms-fields" data-fields="${i}" hidden></div>
+      </div>`;
+  }
+  function fieldsHtml(i) {
+    const ms = work[i].milestone || {};
+    return `<label class="ms-label">Milestone: year, title, then the story</label>
+      <input type="text" class="ed-ms-year" data-i="${i}" value="${esc(ms.year || '')}" placeholder="Year" style="max-width:120px;margin-bottom:6px">
+      <input type="text" class="ed-ms-title" data-i="${i}" value="${esc(ms.title || '')}" placeholder="Milestone title" style="margin-bottom:6px;width:100%">
+      <textarea class="ed-ms-text" data-i="${i}" placeholder="What happened?">${esc(ms.text || '')}</textarea>`;
+  }
+  function renderList() {
+    // Build as one string for speed even at 365 rows.
+    listEl.innerHTML = work.map((c, i) => rowHtml(i, c)).join('');
+    countNote.textContent = work.length + (work.length === 1 ? ' chapter' : ' chapters');
+  }
+  function updatePreview(i) {
+    const p = listEl.querySelector(`[data-prev="${i}"]`);
+    if (p) {
+      const ms = work[i].milestone || {};
+      p.innerHTML = `<span class="yr">${esc(ms.year || '')}</span> ${esc(ms.title || '')}`;
+    }
+  }
+
+  listEl.addEventListener('input', e => {
+    const t = e.target;
+    const i = Number(t.dataset.i);
+    if (!work[i]) return;
+    if (t.classList.contains('ed-ch-name')) work[i].name = t.value;
+    else if (t.classList.contains('ed-ms-year')) { work[i].milestone.year = t.value; updatePreview(i); }
+    else if (t.classList.contains('ed-ms-title')) { work[i].milestone.title = t.value; updatePreview(i); }
+    else if (t.classList.contains('ed-ms-text')) work[i].milestone.text = t.value;
+  });
+  listEl.addEventListener('click', e => {
+    const tg = e.target.closest('.ms-toggle');
+    if (!tg) return;
+    const i = Number(tg.dataset.toggle);
+    const f = listEl.querySelector(`[data-fields="${i}"]`);
+    if (f.hidden) { f.innerHTML = fieldsHtml(i); f.hidden = false; tg.textContent = 'close'; }
+    else { f.hidden = true; f.innerHTML = ''; tg.textContent = 'edit'; }
+  });
+
+  function applyCount() {
+    const count = clamp(Math.round(num(countInput.value)), 1, MAX_CHAPTERS);
+    countInput.value = count;
+    const ms = generateMilestones(count);
+    const next = [];
+    for (let i = 0; i < count; i++) {
+      const prev = work[i];
+      next.push({
+        name: prev ? prev.name : ('Chapter ' + (i + 1)),
+        done: prev ? prev.done : false,
+        milestone: ms[i]
+      });
+    }
+    work = next;
+    renderList();
+  }
+
+  modal.querySelector('#f-apply').addEventListener('click', () => { applyCount(); sfx.click(); });
+  countInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); applyCount(); } });
+
+  const cancel = modal.querySelector('#f-cancel');
+  if (cancel) cancel.addEventListener('click', closeModal);
+
+  renderList();
+
+  modal.querySelector('#f-save').addEventListener('click', async () => {
+    const title = modal.querySelector('#f-title').value.trim();
+    const author = modal.querySelector('#f-author').value.trim();
+    const pages = Math.round(num(modal.querySelector('#f-pages').value));
+    const err = modal.querySelector('#f-err');
+
+    if (!title) { err.textContent = 'A book needs a title.'; return; }
+    if (pages < 1) { err.textContent = 'Total pages must be at least 1.'; return; }
+    if (!work.length) { err.textContent = 'Add at least one chapter.'; return; }
+    if (work.length > MAX_CHAPTERS) { err.textContent = 'The ceiling is ' + MAX_CHAPTERS + ' chapters.'; return; }
+    if (work.some(c => !c.name.trim())) { err.textContent = 'Every chapter needs a name.'; return; }
+
+    const chapters = work.map(c => ({
+      name: c.name.trim(),
+      done: !!c.done,
+      milestone: {
+        year: (c.milestone.year || '').toString().trim(),
+        title: (c.milestone.title || '').toString().trim(),
+        text: (c.milestone.text || '').toString().trim()
+      }
+    }));
+
+    if (isNew) {
+      const nb = {
+        id: uid(), title, author, totalPages: pages,
+        pagesRead: 0, sprints: 0, rating: 0, notes: '', finished: false,
+        chapters
+      };
+      state.books.push(nb);
+      state.activeId = nb.id;
+      toast('Enrolled. Course R.' + String(state.books.length).padStart(3, '0') + ' is in session.');
+      timSay('start');
+    } else {
+      existing.title = title;
+      existing.author = author;
+      existing.totalPages = pages;
+      existing.pagesRead = clamp(existing.pagesRead, 0, pages);
+      existing.chapters = chapters;
+      existing.finished = isComplete(existing) ? existing.finished : false;
+    }
+    await persist();
+    closeModal();
+    render();
+    sfx.click();
+    checkCompletion();
+  });
+}
+
+/* ---------- Library ---------- */
+function openLibrary() {
+  const items = state.books.map((b, i) => {
+    const m = metrics(b);
+    const done = isComplete(b);
+    return `
+      <div class="lib-item ${b.id === state.activeId ? 'active' : ''}">
+        <div class="lib-info">
+          <div class="lib-title">R.${String(i + 1).padStart(3, '0')} &nbsp;${esc(b.title)} ${done ? '<span class="lib-done">Finished</span>' : ''}</div>
+          <div class="lib-meta">${b.author ? esc(b.author) + ' \u00b7 ' : ''}${b.pagesRead}/${b.totalPages} pages \u00b7 ${Math.round(m.p * 100)}% \u00b7 rank #${m.rank.toLocaleString()}</div>
+        </div>
+        <div class="lib-actions">
+          ${b.id !== state.activeId ? `<button class="lib-btn" data-open="${b.id}">Open</button>` : ''}
+          <button class="lib-btn danger" data-del="${b.id}">Remove</button>
+        </div>
+      </div>`;
+  }).join('') || '<p style="color:var(--slate-dark);font-size:.9rem;margin-bottom:12px">No courses yet. Enroll in your first book below.</p>';
+
+  const modal = openModal(`
+    <h2>Course catalog</h2>
+    <div class="modal-sub">Every book is its own course with its own progress, psets, sprints, and review. Finish one, enroll in the next.</div>
+    ${items}
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="lib-close">Close</button>
+      <button class="btn btn-red" id="lib-add">+ Enroll a new book</button>
+    </div>
+  `);
+
+  modal.querySelector('#lib-close').addEventListener('click', closeModal);
+  modal.querySelector('#lib-add').addEventListener('click', () => { closeModal(); openBookForm(null); });
+  modal.addEventListener('click', async e => {
+    const open = e.target.closest('[data-open]');
+    if (open) {
+      state.activeId = open.dataset.open;
+      await persist();
+      closeModal();
+      render();
+      timSay(timMood(metrics(activeBook()).p));
+      return;
+    }
+    const del = e.target.closest('[data-del]');
+    if (del) {
+      const b = state.books.find(x => x.id === del.dataset.del);
+      if (!b) return;
+      if (!confirm('Remove "' + b.title + '" and its progress? This cannot be undone.')) return;
+      state.books = state.books.filter(x => x.id !== b.id);
+      if (state.activeId === b.id) state.activeId = state.books.length ? state.books[0].id : null;
+      await persist();
+      closeModal();
+      if (state.books.length) { openLibrary(); render(); }
+      else { render(); openBookForm(null); }
+    }
+  });
+}
+
+/* ---------- Wire up ---------- */
+function bind() {
+  document.getElementById('btn-library').addEventListener('click', openLibrary);
+  document.getElementById('btn-edit-book').addEventListener('click', () => {
+    const b = activeBook(); if (b) openBookForm(b);
+  });
+
+  document.getElementById('btn-sound').addEventListener('click', async e => {
+    state.sound = !state.sound;
+    e.target.textContent = 'Sound: ' + (state.sound ? 'on' : 'off');
+    await persist();
+    sfx.click();
+  });
+
+  document.querySelectorAll('.btn-quick').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const b = activeBook(); if (!b) return;
+      setPage(b.pagesRead + Number(btn.dataset.add), true);
+    });
+  });
+
+  const pageInput = document.getElementById('page-input');
+  document.getElementById('btn-set-page').addEventListener('click', () => {
+    if (pageInput.value === '') return;
+    setPage(pageInput.value, false);
+    pageInput.value = '';
+  });
+  pageInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { document.getElementById('btn-set-page').click(); }
+  });
+
+  document.getElementById('chapter-list').addEventListener('click', e => {
+    const d = e.target.closest('[data-done]');
+    if (d) { completeChapter(Number(d.dataset.done)); return; }
+    const u = e.target.closest('[data-undo]');
+    if (u) undoChapter(Number(u.dataset.undo));
+  });
+
+  document.getElementById('sprint-durations').addEventListener('click', e => {
+    const b = e.target.closest('button[data-min]');
+    if (!b || sprint.running) return;
+    document.querySelectorAll('#sprint-durations button').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+    sprint.minutes = Number(b.dataset.min);
+    document.getElementById('timer-display').textContent = fmtTime(sprint.minutes * 60000);
+    sfx.click();
+  });
+  document.getElementById('btn-sprint').addEventListener('click', toggleSprint);
+  document.getElementById('btn-sprint-reset').addEventListener('click', () => {
+    sprint.running = false;
+    clearInterval(sprint.tickId);
+    document.getElementById('sprint-panel').classList.remove('running');
+    document.getElementById('btn-sprint').textContent = 'Start sprint';
+    document.getElementById('timer-display').textContent = fmtTime(sprint.minutes * 60000);
+  });
+
+  let notesTimer = null;
+  document.getElementById('review-notes').addEventListener('input', e => {
+    const b = activeBook(); if (!b) return;
+    b.notes = e.target.value;
+    clearTimeout(notesTimer);
+    notesTimer = setTimeout(async () => {
+      await persist();
+      const el = document.getElementById('review-saved');
+      el.textContent = 'Saved';
+      setTimeout(() => { el.textContent = ''; }, 1600);
+    }, 600);
+  });
+
+  window.addEventListener('resize', () => {
+    const c = document.getElementById('confetti-canvas');
+    if (!c.hidden) { c.width = innerWidth; c.height = innerHeight; }
+  });
+}
+
+/* ---------- Boot ---------- */
+(async function init() {
+  await store.detect();
+  const saved = migrate(await store.load());
+  if (saved) {
+    state = saved;
+    if (!state.books.find(b => b.id === state.activeId)) {
+      state.activeId = state.books.length ? state.books[0].id : null;
+    }
+  }
+  document.getElementById('btn-sound').textContent = 'Sound: ' + (state.sound ? 'on' : 'off');
+  bind();
+  render();
+  if (!state.books.length) {
+    openBookForm(null);
+  } else {
+    timSay(timMood(metrics(activeBook()).p));
+  }
+})();
+
+</script>
+</body>
+</html>
